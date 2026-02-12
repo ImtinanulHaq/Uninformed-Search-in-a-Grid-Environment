@@ -56,7 +56,7 @@ class GridPathfinder:
             "BFS": BreadthFirstSearch,
             "DFS": DepthFirstSearch,
             "UCS": UniformCostSearch,
-            "DLS": lambda g: DepthLimitedSearch(g, depth_limit=30),
+            "DLS": lambda g: DepthLimitedSearch(g, depth_limit=60),  # Increased to handle larger grids
             "IDDFS": IterativeDeepeningDFS,
             "BIDIRECTIONAL": BidirectionalSearch,
         }
