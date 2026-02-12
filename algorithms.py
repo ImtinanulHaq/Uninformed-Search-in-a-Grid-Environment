@@ -14,7 +14,7 @@ for visualization purposes.
 """
 
 from collections import deque
-from typing import Tuple, List, Set, Dict, Optional, Callable
+from typing import Tuple, List, Set, Dict, Optional, Union
 from grid import Grid
 import heapq
 
@@ -75,9 +75,17 @@ class SearchAlgorithm:
         path.reverse()
         return path
     
-    def _check_dynamic_obstacles(self, frontier: List | deque | Set) -> Optional[Tuple[int, int]]:
+    def _check_dynamic_obstacles(self, frontier: Union[List, deque, Set]) -> Optional[Tuple[int, int]]:
         """
         Check if any dynamic obstacles have spawned and handle them.
+        
+        For dynamic environments, if an obstacle blocks a node in the frontier,
+        that node must be removed to trigger replanning.
+        
+        Handles different tuple formats:
+        - BFS/DFS: (x, y) nodes
+        - UCS: (cost, counter, (x, y)) tuples
+        - DLS: ((x, y), depth) tuples
         
         Args:
             frontier: Current frontier (queue/stack/set)
@@ -88,7 +96,78 @@ class SearchAlgorithm:
         new_obstacle = self.grid.spawn_dynamic_obstacle()
         if new_obstacle:
             self.dynamic_obstacles_encountered.append(new_obstacle)
+            
+            # Handle blocked nodes in frontier
+            if isinstance(frontier, deque):
+                # For queue-based searches (BFS, Bidirectional)
+                frontier_list = list(frontier)
+                frontier.clear()
+                for item in frontier_list:
+                    if not self.grid.is_blocked(item):
+                        frontier.append(item)
+            elif isinstance(frontier, list):
+                # For stack-based and priority-based searches
+                frontier_copy = frontier.copy()
+                frontier.clear()
+                for item in frontier_copy:
+                    # Extract node from different tuple formats
+                    node = self._extract_node_from_item(item)
+                    if node and not self.grid.is_blocked(node):
+                        frontier.append(item)
+                    elif node is None:
+                        # Item is just a node tuple, keep it if not blocked
+                        if not isinstance(item, tuple) or len(item) != 2:
+                            frontier.append(item)
+                        elif not self.grid.is_blocked(item):
+                            frontier.append(item)
+            elif isinstance(frontier, set):
+                # For set-based frontiers
+                blocked_items = set()
+                for item in frontier:
+                    node = self._extract_node_from_item(item)
+                    if node and self.grid.is_blocked(node):
+                        blocked_items.add(item)
+                frontier.difference_update(blocked_items)
+        
         return new_obstacle
+    
+    def _extract_node_from_item(self, item) -> Optional[Tuple[int, int]]:
+        """
+        Extract node coordinates from different frontier item formats.
+        
+        Args:
+            item: Frontier item (node or wrapped node)
+            
+        Returns:
+            Node tuple (x, y) or None if item is just a node
+        """
+        # UCS format: (cost, counter, node)
+        if isinstance(item, tuple) and len(item) == 3:
+            try:
+                if isinstance(item[2], tuple) and len(item[2]) == 2:
+                    return item[2]  # Return the node
+            except (TypeError, IndexError):
+                pass
+        
+        # DLS format: (node, depth)
+        if isinstance(item, tuple) and len(item) == 2:
+            try:
+                if isinstance(item[0], tuple) and len(item[0]) == 2:
+                    # Check if item[1] looks like a depth (int)
+                    if isinstance(item[1], int):
+                        return item[0]  # Return the node
+            except (TypeError, IndexError):
+                pass
+        
+        # Plain node format: (x, y)
+        if isinstance(item, tuple) and len(item) == 2:
+            try:
+                if isinstance(item[0], int) and isinstance(item[1], int):
+                    return item  # Item is already a node
+            except (TypeError, IndexError):
+                pass
+        
+        return None
     
     def search(self) -> SearchResult:
         """
@@ -118,18 +197,30 @@ class BreadthFirstSearch(SearchAlgorithm):
         
         # Initialize frontier queue with start node
         frontier = deque([self.grid.start])
-        self.explored.add(self.grid.start)
+        self.explored: Set[Tuple[int, int]] = set()  # Mark as explored when POPPING, not when adding
         self.parent_map[self.grid.start] = None
         
+        # Track in-frontier nodes to avoid duplicates
+        in_frontier: Set[Tuple[int, int]] = {self.grid.start}
+        
         while frontier:
-            # Check for dynamic obstacles
+            # Check for dynamic obstacles and remove blocked nodes
             self._check_dynamic_obstacles(frontier)
             
-            # Record current frontier state
+            # Record current frontier state for visualization
             self.frontier_history.append(set(frontier))
             
             # Get next node to explore (FIFO)
             current = frontier.popleft()
+            in_frontier.discard(current)
+            
+            # Skip if already explored (can happen with dynamic obstacles)
+            if current in self.explored:
+                continue
+            
+            # Mark as explored when POPPING, not when adding
+            # This allows dynamic obstacles to trigger reconsideration
+            self.explored.add(current)
             
             # Check if we reached the target
             if current == self.grid.target:
@@ -140,10 +231,11 @@ class BreadthFirstSearch(SearchAlgorithm):
             # Explore neighbors in specified order
             neighbors = self.grid.get_neighbors(current)
             for neighbor in neighbors:
-                if neighbor not in self.explored:
-                    self.explored.add(neighbor)
+                # Only add if not yet explored and not already in frontier
+                if neighbor not in self.explored and neighbor not in in_frontier:
                     self.parent_map[neighbor] = current
                     frontier.append(neighbor)
+                    in_frontier.add(neighbor)
         
         result.explored = self.explored.copy()
         result.frontier_history = self.frontier_history
@@ -172,11 +264,14 @@ class DepthFirstSearch(SearchAlgorithm):
         
         # Initialize frontier stack with start node
         frontier = [self.grid.start]
-        self.explored.add(self.grid.start)
+        self.explored: Set[Tuple[int, int]] = set()  # Mark as explored when POPPING
         self.parent_map[self.grid.start] = None
         
+        # Track in-frontier nodes
+        in_frontier: Set[Tuple[int, int]] = {self.grid.start}
+        
         while frontier:
-            # Check for dynamic obstacles
+            # Check for dynamic obstacles and remove blocked nodes
             self._check_dynamic_obstacles(frontier)
             
             # Record current frontier state
@@ -184,6 +279,14 @@ class DepthFirstSearch(SearchAlgorithm):
             
             # Get next node to explore (LIFO)
             current = frontier.pop()
+            in_frontier.discard(current)
+            
+            # Skip if already explored (can happen with dynamic obstacles)
+            if current in self.explored:
+                continue
+            
+            # Mark as explored when POPPING
+            self.explored.add(current)
             
             # Check if we reached the target
             if current == self.grid.target:
@@ -191,13 +294,13 @@ class DepthFirstSearch(SearchAlgorithm):
                 result.found = True
                 break
             
-            # Explore neighbors in reverse order (since we're using a stack, last added is explored first)
+            # Explore neighbors in reverse order (since we're using a stack)
             neighbors = self.grid.get_neighbors(current)
             for neighbor in reversed(neighbors):
-                if neighbor not in self.explored:
-                    self.explored.add(neighbor)
+                if neighbor not in self.explored and neighbor not in in_frontier:
                     self.parent_map[neighbor] = current
                     frontier.append(neighbor)
+                    in_frontier.add(neighbor)
         
         result.explored = self.explored.copy()
         result.frontier_history = self.frontier_history
@@ -223,21 +326,33 @@ class UniformCostSearch(SearchAlgorithm):
         """Execute Uniform Cost Search."""
         result = SearchResult()
         
-        # Priority queue: (cost, node)
-        frontier = [(0, self.grid.start)]
+        # Priority queue: (cost, counter, node) - counter for stable ordering
+        frontier = [(0, 0, self.grid.start)]
         cost_map: Dict[Tuple[int, int], float] = {self.grid.start: 0}
-        self.explored.add(self.grid.start)
+        self.explored: Set[Tuple[int, int]] = set()  # Mark as explored when POPPING
         self.parent_map[self.grid.start] = None
+        counter = 1  # For stable ordering in priority queue
         
         while frontier:
             # Check for dynamic obstacles
             self._check_dynamic_obstacles(frontier)
             
-            # Record current frontier state (extract nodes from priority queue)
-            self.frontier_history.append({node for _, node in frontier})
+            # Record current frontier state
+            self.frontier_history.append({node for _, _, node in frontier})
             
             # Get node with lowest cost
-            current_cost, current = heapq.heappop(frontier)
+            current_cost, _, current = heapq.heappop(frontier)
+            
+            # Skip if already explored (can happen if node added multiple times)
+            if current in self.explored:
+                continue
+            
+            # Skip if we've found a better path already
+            if current_cost > cost_map.get(current, float('inf')):
+                continue
+            
+            # Mark as explored when POPPING to allow reconsideration
+            self.explored.add(current)
             
             # Check if we reached the target
             if current == self.grid.target:
@@ -245,22 +360,17 @@ class UniformCostSearch(SearchAlgorithm):
                 result.found = True
                 break
             
-            # Skip if we've already explored this node with a better cost
-            if current_cost > cost_map.get(current, float('inf')):
-                continue
-            
-            # Explore neighbors
+            # Explore neighbors (do NOT mark explored here)
             neighbors = self.grid.get_neighbors(current)
             for neighbor in neighbors:
                 new_cost = current_cost + 1  # Uniform cost (all edges cost 1)
                 
+                # If we found a better path or first path to this node
                 if neighbor not in cost_map or new_cost < cost_map[neighbor]:
                     cost_map[neighbor] = new_cost
                     self.parent_map[neighbor] = current
-                    heapq.heappush(frontier, (new_cost, neighbor))
-                    
-                    if neighbor not in self.explored:
-                        self.explored.add(neighbor)
+                    heapq.heappush(frontier, (new_cost, counter, neighbor))
+                    counter += 1
         
         result.explored = self.explored.copy()
         result.frontier_history = self.frontier_history
@@ -299,11 +409,14 @@ class DepthLimitedSearch(SearchAlgorithm):
         
         # Stack: (node, depth)
         frontier = [(self.grid.start, 0)]
-        self.explored.add(self.grid.start)
+        self.explored: Set[Tuple[int, int]] = set()  # Mark as explored when POPPING
         self.parent_map[self.grid.start] = None
         
+        # Track in-frontier nodes to avoid duplicates
+        in_frontier: Set[Tuple[int, int]] = {self.grid.start}
+        
         while frontier:
-            # Check for dynamic obstacles
+            # Check for dynamic obstacles and remove blocked nodes
             self._check_dynamic_obstacles(frontier)
             
             # Record current frontier state
@@ -311,6 +424,14 @@ class DepthLimitedSearch(SearchAlgorithm):
             
             # Get next node
             current, depth = frontier.pop()
+            in_frontier.discard(current)
+            
+            # Skip if already explored
+            if current in self.explored:
+                continue
+            
+            # Mark as explored when POPPING
+            self.explored.add(current)
             
             # Check if we reached the target
             if current == self.grid.target:
@@ -322,10 +443,10 @@ class DepthLimitedSearch(SearchAlgorithm):
             if depth < self.depth_limit:
                 neighbors = self.grid.get_neighbors(current)
                 for neighbor in reversed(neighbors):
-                    if neighbor not in self.explored:
-                        self.explored.add(neighbor)
+                    if neighbor not in self.explored and neighbor not in in_frontier:
                         self.parent_map[neighbor] = current
                         frontier.append((neighbor, depth + 1))
+                        in_frontier.add(neighbor)
         
         result.explored = self.explored.copy()
         result.frontier_history = self.frontier_history
@@ -354,8 +475,10 @@ class IterativeDeepeningDFS(SearchAlgorithm):
         
         # Try increasing depth limits
         max_depth = max(self.grid.width, self.grid.height) * 2
+        all_explored: Set[Tuple[int, int]] = set()  # Accumulate explored across iterations
         
         for limit in range(1, max_depth + 1):
+            # Create fresh structures for each iteration
             self.explored.clear()
             self.parent_map.clear()
             self.parent_map[self.grid.start] = None
@@ -363,14 +486,23 @@ class IterativeDeepeningDFS(SearchAlgorithm):
             # Perform DLS with current limit
             found, path = self._dls_recursive(self.grid.start, limit, None)
             
+            # Accumulate explored nodes across iterations for accurate count
+            all_explored.update(self.explored)
+            
             if found:
                 result.path = path
                 result.found = True
+                # Include all nodes explored up to solution depth
+                result.explored = all_explored.copy()
                 break
         
-        result.explored = self.explored.copy()
+        # If not found, report all explored nodes across all iterations
+        if not result.found:
+            result.explored = all_explored.copy()
+        
         result.frontier_history = self.frontier_history
-        result.total_nodes_explored = len(self.explored)
+        # Total nodes is accurate count from accumulated exploration
+        result.total_nodes_explored = len(all_explored) if all_explored else len(self.explored)
         result.dynamic_obstacles_encountered = self.dynamic_obstacles_encountered
         
         return result
@@ -381,37 +513,42 @@ class IterativeDeepeningDFS(SearchAlgorithm):
         Recursive helper for depth-limited search.
         
         Args:
-            current: Current node
-            limit: Depth limit
-            parent: Parent node
+            current: Current node being explored
+            limit: Remaining depth limit before stopping exploration
+            parent: Parent node (for reference)
             
         Returns:
-            Tuple of (found: bool, path: List)
+            Tuple of (found: bool, path: List) where path is only filled if found=True
         """
-        # Check for dynamic obstacles periodically
+        # Check for dynamic obstacles periodically (during recursion)
         if len(self.explored) % 10 == 0:
             self._check_dynamic_obstacles([])
         
+        # Mark current node as explored
         self.explored.add(current)
         self.frontier_history.append(self.explored.copy())
         
-        # Check if target found
+        # Check if we reached the target
         if current == self.grid.target:
             return True, self._reconstruct_path(current)
         
-        # Check depth limit
+        # Check if we've exceeded depth limit
         if limit == 0:
             return False, []
         
-        # Explore neighbors
+        # Explore neighbors recursively with reduced depth limit
         neighbors = self.grid.get_neighbors(current)
         for neighbor in neighbors:
+            # Skip if already explored in this iteration
             if neighbor not in self.explored:
+                # Set parent before recursive call
                 self.parent_map[neighbor] = current
+                # Recurse with depth limit reduced by 1
                 found, path = self._dls_recursive(neighbor, limit - 1, current)
                 if found:
                     return True, path
         
+        # No solution found from this node at this depth
         return False, []
 
 
@@ -435,8 +572,11 @@ class BidirectionalSearch(SearchAlgorithm):
         forward_frontier = deque([self.grid.start])
         backward_frontier = deque([self.grid.target])
         
-        forward_explored: Set[Tuple[int, int]] = {self.grid.start}
-        backward_explored: Set[Tuple[int, int]] = {self.grid.target}
+        forward_explored: Set[Tuple[int, int]] = set()  # Mark when POPPING
+        backward_explored: Set[Tuple[int, int]] = set()  # Mark when POPPING
+        
+        forward_in_frontier: Set[Tuple[int, int]] = {self.grid.start}
+        backward_in_frontier: Set[Tuple[int, int]] = {self.grid.target}
         
         forward_parent: Dict[Tuple[int, int], Optional[Tuple[int, int]]] = {self.grid.start: None}
         backward_parent: Dict[Tuple[int, int], Optional[Tuple[int, int]]] = {self.grid.target: None}
@@ -445,58 +585,71 @@ class BidirectionalSearch(SearchAlgorithm):
         
         # Alternate between forward and backward search
         while forward_frontier or backward_frontier:
-            # Check for dynamic obstacles
+            # Check for dynamic obstacles in both frontiers
             self._check_dynamic_obstacles(forward_frontier)
+            self._check_dynamic_obstacles(backward_frontier)
             
             # Expand from forward frontier
             if forward_frontier:
                 current = forward_frontier.popleft()
-                self.explored.add(current)
+                forward_in_frontier.discard(current)
                 
-                neighbors = self.grid.get_neighbors(current)
-                for neighbor in neighbors:
-                    if neighbor in backward_explored:
-                        # Found meeting point!
-                        meeting_point = neighbor
-                        forward_parent[neighbor] = current
-                        break
+                # Skip if already explored
+                if current not in forward_explored:
+                    forward_explored.add(current)
+                    self.explored.add(current)
                     
-                    if neighbor not in forward_explored:
-                        forward_explored.add(neighbor)
-                        forward_parent[neighbor] = current
-                        forward_frontier.append(neighbor)
-                
-                if meeting_point:
-                    break
+                    neighbors = self.grid.get_neighbors(current)
+                    for neighbor in neighbors:
+                        # Check if we found meeting point
+                        if neighbor in backward_explored:
+                            meeting_point = neighbor
+                            forward_parent[neighbor] = current
+                            break
+                        
+                        # Add to forward frontier if not explored and not in frontier
+                        if neighbor not in forward_explored and neighbor not in forward_in_frontier:
+                            forward_parent[neighbor] = current
+                            forward_frontier.append(neighbor)
+                            forward_in_frontier.add(neighbor)
+                    
+                    if meeting_point:
+                        break
             
             # Expand from backward frontier
-            if backward_frontier:
+            if backward_frontier and not meeting_point:
                 current = backward_frontier.popleft()
-                self.explored.add(current)
+                backward_in_frontier.discard(current)
                 
-                neighbors = self.grid.get_neighbors(current)
-                for neighbor in neighbors:
-                    if neighbor in forward_explored:
-                        # Found meeting point!
-                        meeting_point = neighbor
-                        backward_parent[neighbor] = current
-                        break
+                # Skip if already explored
+                if current not in backward_explored:
+                    backward_explored.add(current)
+                    self.explored.add(current)
                     
-                    if neighbor not in backward_explored:
-                        backward_explored.add(neighbor)
-                        backward_parent[neighbor] = current
-                        backward_frontier.append(neighbor)
-                
-                if meeting_point:
-                    break
+                    neighbors = self.grid.get_neighbors(current)
+                    for neighbor in neighbors:
+                        # Check if we found meeting point
+                        if neighbor in forward_explored:
+                            meeting_point = neighbor
+                            backward_parent[neighbor] = current
+                            break
+                        
+                        # Add to backward frontier if not explored and not in frontier
+                        if neighbor not in backward_explored and neighbor not in backward_in_frontier:
+                            backward_parent[neighbor] = current
+                            backward_frontier.append(neighbor)
+                            backward_in_frontier.add(neighbor)
+                    
+                    if meeting_point:
+                        break
             
-            # Record frontier state
+            # Record frontier state for visualization (keep separate for clarity)
             current_frontier = set(forward_frontier) | set(backward_frontier)
             self.frontier_history.append(current_frontier)
         
         # Reconstruct path if meeting point found
         if meeting_point:
-            # Build path from start to meeting point
+            # Build path from start to meeting point using forward parent map
             path_forward = []
             pos = meeting_point
             while pos is not None:
@@ -504,17 +657,14 @@ class BidirectionalSearch(SearchAlgorithm):
                 pos = forward_parent.get(pos)
             path_forward.reverse()
             
-            # Build path from meeting point to target
+            # Build path from meeting point to target using backward parent map
             path_backward = []
-            pos = meeting_point
+            pos = backward_parent.get(meeting_point)  # Start from parent of meeting point
             while pos is not None:
                 path_backward.append(pos)
                 pos = backward_parent.get(pos)
             
-            # Remove duplicate meeting point
-            if path_forward and path_backward and path_forward[-1] == path_backward[0]:
-                path_backward.pop(0)
-            
+            # Combine paths (no duplicate needed as we skip meeting point parent)
             result.path = path_forward + path_backward
             result.found = True
         
