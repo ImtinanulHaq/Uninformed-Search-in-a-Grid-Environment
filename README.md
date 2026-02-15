@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**🤖 AI Pathfinder with Dynamic Obstacles and Real-time Visualization**
+** AI Pathfinder with Dynamic Obstacles and Real-time Visualization**
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org)
 [![Pygame](https://img.shields.io/badge/Pygame-2.5.2-red.svg)](https://www.pygame.org)
@@ -18,11 +18,11 @@
 A comprehensive implementation of **six uninformed search algorithms** for pathfinding in dynamic grid environments. This project demonstrates fundamental AI search techniques with professional-grade visualization, complete with obstacles that spawn dynamically during execution.
 
 **Key Features:**
-- 🔍 Six uninformed search algorithms (BFS, DFS, UCS, DLS, IDDFS, Bidirectional)
-- 🎨 Real-time GUI visualization with Pygame
-- 🎯 Dynamic obstacle handling with automatic re-planning
-- 📊 Comprehensive performance metrics and comparison
-- 💻 Production-ready, well-documented codebase
+-  Six uninformed search algorithms (BFS, DFS, UCS, DLS, IDDFS, Bidirectional)
+-  Real-time GUI visualization with Pygame
+-  Dynamic obstacle handling with automatic re-planning
+-  Comprehensive performance metrics and comparison
+-  Production-ready, well-documented codebase
 
 ---
 
@@ -78,7 +78,7 @@ python app.py
 
 ## Features
 
-### 🔍 Six Uninformed Search Algorithms
+###  Six Uninformed Search Algorithms
 
 | Algorithm | Type | Best For | Guarantee |
 |-----------|------|----------|-----------|
@@ -89,28 +89,28 @@ python app.py
 | **IDDFS** | Hybrid | Unknown Depth | ✓ Optimal + Memory Efficient |
 | **Bidirectional** | Two-way Search | Dense Graphs | ✓ Optimal + Fast |
 
-### 🎨 Professional GUI Visualization
+###  Professional GUI Visualization
 
 - ⚡ **Real-time Animation:** Step-by-step visualization of exploration
-- 🎯 **Color-coded Display:** Distinct colors for walls, explored nodes, frontier, and path
-- 📊 **Live Metrics:** Display path length, explored nodes, obstacles encountered
-- 🎛️ **Interactive Controls:** Pause/resume and adjust animation speed
-- 📈 **Progress Tracking:** Visual progress bar showing algorithm completion
+-  **Color-coded Display:** Distinct colors for walls, explored nodes, frontier, and path
+-  **Live Metrics:** Display path length, explored nodes, obstacles encountered
+-  **Interactive Controls:** Pause/resume and adjust animation speed
+-  **Progress Tracking:** Visual progress bar showing algorithm completion
 
-### 🎯 Dynamic Obstacle Handling
+###  Dynamic Obstacle Handling
 
-- 🌪️ **Runtime Obstacle Spawning:** Obstacles can appear during search
-- 🔄 **Automatic Re-planning:** When obstacles block the path, algorithms adapt
-- ⚙️ **Configurable Probability:** Control frequency of obstacle generation (0.0 - 1.0)
-- 📍 **Obstacle Tracking:** Track which obstacles forced replanning
+-  **Runtime Obstacle Spawning:** Obstacles can appear during search
+-  **Automatic Re-planning:** When obstacles block the path, algorithms adapt
+-  **Configurable Probability:** Control frequency of obstacle generation (0.0 - 1.0)
+-  **Obstacle Tracking:** Track which obstacles forced replanning
 
-### 💻 Professional Codebase
+###  Professional Codebase
 
-- 📝 **Well-Documented:** Comprehensive inline comments and docstrings
-- 🏗️ **Modular Design:** Clean separation of concerns (Grid, Algorithms, Visualization)
-- 🔤 **Type Hints:** Full type annotations for better code clarity
-- ✅ **Object-Oriented:** Extensible class-based architecture
-- 🧪 **Test Suite:** Multiple test scenarios included
+-  **Well-Documented:** Comprehensive inline comments and docstrings
+-  **Modular Design:** Clean separation of concerns (Grid, Algorithms, Visualization)
+-  **Type Hints:** Full type annotations for better code clarity
+-  **Object-Oriented:** Extensible class-based architecture
+-  **Test Suite:** Multiple test scenarios included
 
 ---
 
@@ -725,7 +725,7 @@ Created as a professional implementation of AI Pathfinding and Uninformed Search
 
 <div align="center">
 
-**Happy Pathfinding!** 🤖🗺️⚡
+**Happy Pathfinding!** ⚡
 
 *Explore, learn, and master the fundamentals of AI search algorithms*
 
