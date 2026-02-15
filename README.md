@@ -91,7 +91,7 @@ python app.py
 
 ###  Professional GUI Visualization
 
-- ⚡ **Real-time Animation:** Step-by-step visualization of exploration
+-  **Real-time Animation:** Step-by-step visualization of exploration
 -  **Color-coded Display:** Distinct colors for walls, explored nodes, frontier, and path
 -  **Live Metrics:** Display path length, explored nodes, obstacles encountered
 -  **Interactive Controls:** Pause/resume and adjust animation speed
@@ -725,7 +725,7 @@ Created as a professional implementation of AI Pathfinding and Uninformed Search
 
 <div align="center">
 
-**Happy Pathfinding!** ⚡
+**Happy Pathfinding!** 
 
 *Explore, learn, and master the fundamentals of AI search algorithms*
 
