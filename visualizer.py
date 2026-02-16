@@ -52,7 +52,7 @@ class GridVisualizer:
         # Initialize Pygame
         pygame.init()
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
-        pygame.display.set_caption("GOOD PERFORMANCE TIME APP - Uninformed Search Visualization")
+        pygame.display.set_caption("Pathfinder Algorithm Visualizer - Uninformed Search")
         
         # Setup fonts for different text sizes
         self.clock = pygame.time.Clock()
