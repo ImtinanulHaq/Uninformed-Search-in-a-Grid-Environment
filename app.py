@@ -12,7 +12,7 @@ class GridPathfinder:
     
     def __init__(self, width: int = 50, height: int = 50, 
                  start: tuple = (5, 5), target: tuple = (45, 45),
-                 num_walls: int = 250, dynamic_obstacle_probability: float = 0.02):
+                 num_walls: int = 250, dynamic_obstacle_probability: float = 0.0):
         """
         Initialize the pathfinder application.
         
@@ -226,7 +226,7 @@ def main():
     print("\n")
     print("(" + "═"*58 + ")")
     print("(" + " UNINFORMED SEARCH IN GRID ENVIRONMENT ".center(58) + ")")
-    print("(" + " AI Pathfinder with Dynamic Obstacles ".center(58) + ")")
+    print("(" + " AI Pathfinder with Static Obstacles ".center(58) + ")")
     print("(" + "═"*58 + ")")
     
     # Create pathfinder with default settings
@@ -237,7 +237,7 @@ def main():
         start=(5, 5),                       # Start position
         target=(45, 45),                    # Target position
         num_walls=250,                      # Number of static walls
-        dynamic_obstacle_probability=0.02   # Probability of dynamic obstacles
+        dynamic_obstacle_probability=0.0    # Disabled: obstacles are now static
     )
     
     # Start interactive menu
