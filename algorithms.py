@@ -1,18 +1,3 @@
-"""
-Search Algorithms Module
-
-This module implements all six uninformed search algorithms:
-1. Breadth-First Search (BFS)
-2. Depth-First Search (DFS)
-3. Uniform-Cost Search (UCS)
-4. Depth-Limited Search (DLS)
-5. Iterative Deepening DFS (IDDFS)
-6. Bidirectional Search
-
-Each algorithm explores a grid from start to target, tracking explored and frontier nodes
-for visualization purposes.
-"""
-
 from collections import deque
 from typing import Tuple, List, Set, Dict, Optional, Union
 from grid import Grid
@@ -20,18 +5,7 @@ import heapq
 
 
 class SearchResult:
-    """
-    Container for search algorithm results.
-    
-    Attributes:
-        path: Final path from start to target (empty if not found)
-        explored: Set of all explored nodes
-        frontier_history: History of frontier nodes at each step
-        total_nodes_explored: Number of nodes explored
-        found: Whether target was found
-        dynamic_obstacles_encountered: List of dynamic obstacles that forced re-planning
-    """
-    
+
     def __init__(self):
         self.path: List[Tuple[int, int]] = []
         self.explored: Set[Tuple[int, int]] = set()
@@ -58,15 +32,7 @@ class SearchAlgorithm:
         self.dynamic_obstacles_encountered: List[Tuple[int, int]] = []
     
     def _reconstruct_path(self, current: Tuple[int, int]) -> List[Tuple[int, int]]:
-        """
-        Reconstruct the path from start to current position using parent map.
-        
-        Args:
-            current: Current position
-            
-        Returns:
-            List of positions from start to current
-        """
+       
         path = []
         pos = current
         
@@ -80,23 +46,7 @@ class SearchAlgorithm:
         return path
     
     def _check_dynamic_obstacles(self, frontier: Union[List, deque, Set]) -> Optional[Tuple[int, int]]:
-        """
-        Check if any dynamic obstacles have spawned and handle them.
-        
-        For dynamic environments, if an obstacle blocks a node in the frontier,
-        that node must be removed to trigger replanning.
-        
-        Handles different data structures:
-        - deque: For BFS and Bidirectional search
-        - list: For DFS, UCS (priority queue), and DLS
-        - set: For set-based frontiers
-        
-        Args:
-            frontier: Current frontier (queue/stack/set)
-            
-        Returns:
-            New obstacle position if spawned, None otherwise
-        """
+ 
         # Check if a new dynamic obstacle has spawned
         new_obstacle = self.grid.spawn_dynamic_obstacle()
         if new_obstacle:
@@ -136,20 +86,7 @@ class SearchAlgorithm:
         return new_obstacle
     
     def _extract_node_from_item(self, item) -> Optional[Tuple[int, int]]:
-        """
-        Extract node coordinates from different frontier item formats.
-        
-        Different algorithms wrap nodes differently:
-        - BFS/DFS: (x, y) - plain node tuple
-        - UCS: (cost, counter, (x, y)) - priority queue format
-        - DLS: ((x, y), depth) - node with depth tracking
-        
-        Args:
-            item: Frontier item (node or wrapped node)
-            
-        Returns:
-            Node tuple (x, y) or None if item is already a plain node
-        """
+ 
         # UCS format: (cost, counter, node)
         if isinstance(item, tuple) and len(item) == 3:
             if isinstance(item[2], tuple) and len(item[2]) == 2:
@@ -175,26 +112,12 @@ class SearchAlgorithm:
         return None
     
     def search(self) -> SearchResult:
-        """
-        Execute the search algorithm. Must be implemented by subclasses.
-        
-        Returns:
-            SearchResult object with path and exploration data
-        """
+    
         raise NotImplementedError("Subclasses must implement search()")
 
 
 class BreadthFirstSearch(SearchAlgorithm):
-    """
-    Breadth-First Search (BFS)
-    
-    Explores nodes level by level, guaranteeing the shortest path in unweighted graphs.
-    Uses a FIFO queue for exploration order.
-    
-    Time Complexity: O(V + E) where V = vertices, E = edges
-    Space Complexity: O(V)
-    Best for: Finding shortest path in unweighted graphs
-    """
+ 
     
     def search(self) -> SearchResult:
         """Execute Breadth-First Search."""
@@ -251,17 +174,7 @@ class BreadthFirstSearch(SearchAlgorithm):
 
 
 class DepthFirstSearch(SearchAlgorithm):
-    """
-    Depth-First Search (DFS)
-    
-    Explores as deep as possible along each branch before backtracking.
-    Uses a LIFO stack for exploration order.
-    
-    Time Complexity: O(V + E)
-    Space Complexity: O(V)
-    Best for: Detecting cycles, topological sorting
-    Note: Does NOT guarantee shortest path
-    """
+  
     
     def search(self) -> SearchResult:
         """Execute Depth-First Search."""
@@ -317,16 +230,7 @@ class DepthFirstSearch(SearchAlgorithm):
 
 
 class UniformCostSearch(SearchAlgorithm):
-    """
-    Uniform Cost Search (UCS)
-    
-    Expands nodes with lowest path cost first using a priority queue.
-    Guarantees finding the minimum cost path.
-    
-    Time Complexity: O((V + E) * log V)
-    Space Complexity: O(V)
-    Best for: Weighted graphs, finding minimum cost paths
-    """
+ 
     
     def search(self) -> SearchResult:
         """Execute Uniform Cost Search."""
@@ -390,16 +294,7 @@ class UniformCostSearch(SearchAlgorithm):
 
 
 class DepthLimitedSearch(SearchAlgorithm):
-    """
-    Depth-Limited Search (DLS)
     
-    DFS with a maximum depth limit to prevent infinite loops.
-    Useful when you want to limit search scope.
-    
-    Time Complexity: O(b^l) where b = branching factor, l = depth limit
-    Space Complexity: O(b * l)
-    Best for: Avoiding infinite loops, limiting search depth
-    """
     
     def __init__(self, grid: Grid, depth_limit: int = 10):
         """
@@ -467,19 +362,7 @@ class DepthLimitedSearch(SearchAlgorithm):
 
 
 class IterativeDeepeningDFS(SearchAlgorithm):
-    """
-    Iterative Deepening Depth-First Search (IDDFS)
-    
-    Combines advantages of BFS and DFS:
-    - Memory efficient like DFS
-    - Finds shortest path like BFS
-    Repeatedly performs DFS with increasing depth limits.
-    
-    Time Complexity: O(b^d) where b = branching factor, d = solution depth
-    Space Complexity: O(b * d)
-    Best for: Unknown solution depth, memory-constrained scenarios
-    """
-    
+   
     def search(self) -> SearchResult:
         """Execute Iterative Deepening DFS."""
         result = SearchResult()
@@ -521,17 +404,7 @@ class IterativeDeepeningDFS(SearchAlgorithm):
     
     def _dls_recursive(self, current: Tuple[int, int], limit: int, 
                       parent: Optional[Tuple[int, int]]) -> Tuple[bool, List[Tuple[int, int]]]:
-        """
-        Recursive DFS with depth limit.
         
-        Args:
-            current: Current node being explored
-            limit: Remaining depth allowed
-            parent: Parent node (for reference)
-            
-        Returns:
-            (found, path) - found is True if target reached, path is the solution path
-        """
         # Periodically check for dynamic obstacles
         if len(self.explored) % 10 == 0:
             self._check_dynamic_obstacles([])
@@ -567,16 +440,7 @@ class IterativeDeepeningDFS(SearchAlgorithm):
 
 
 class BidirectionalSearch(SearchAlgorithm):
-    """
-    Bidirectional Search
-    
-    Searches simultaneously from start and target, meeting in the middle.
-    Significantly reduces search space compared to unidirectional search.
-    
-    Time Complexity: O(b^(d/2)) where b = branching factor, d = solution depth
-    Space Complexity: O(b^(d/2))
-    Best for: Dense graphs, when both start and target are known
-    """
+  
     
     def search(self) -> SearchResult:
         """Execute Bidirectional Search."""
