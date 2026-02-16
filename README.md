@@ -398,13 +398,23 @@ visualizer = GridVisualizer(
 
 ```
 Uninformed-Search-in-a-Grid-Environment/
-├── app.py                 # Main application & orchestration
-├── grid.py                # Grid management & obstacle handling
-├── algorithms.py          # All 6 search algorithm implementations
-├── visualizer.py          # Pygame GUI visualization
-├── requirements.txt       # Python dependencies
-├── README.md              # Documentation (this file)
-└── .gitignore             # Git configuration
+├── app.py                               # Main application & orchestration
+├── grid.py                              # Grid management & obstacle handling
+├── requirements.txt                     # Python dependencies
+├── README.md                            # Documentation (this file)
+├── .gitignore                           # Git configuration
+├── algorithms_folder/                   # Modular algorithm implementations
+│   ├── __init__.py                      # SearchResult class & exports
+│   ├── bfs.py                           # Breadth-First Search
+│   ├── dfs.py                           # Depth-First Search
+│   ├── ucs.py                           # Uniform Cost Search
+│   ├── dls.py                           # Depth-Limited Search
+│   ├── iddfs.py                         # Iterative Deepening DFS
+│   └── bidirectional.py                 # Bidirectional Search
+└── visualizer_folder/                   # Modular visualization components
+    ├── __init__.py                      # Package exports
+    ├── colors.py                        # Color definitions
+    └── visualizer.py                    # Pygame GUI visualization
 ```
 
 ### Module Descriptions
@@ -412,9 +422,9 @@ Uninformed-Search-in-a-Grid-Environment/
 | Module | Responsibility | Key Classes |
 |--------|----------------|-------------|
 | **app.py** | Application orchestration & main loop | `GridPathfinder` |
-| **grid.py** | Grid representation & environment | `Grid`, `CellType`, `Cell` |
-| **algorithms.py** | Search implementations | `SearchAlgorithm`, `SearchResult`, all 6 algorithm classes |
-| **visualizer.py** | Real-time Pygame visualization | `GridVisualizer`, `Colors` |
+| **grid.py** | Grid representation & environment | `Grid`, `Cell` |
+| **algorithms_folder/** | Modular search algorithms | `SearchResult`, `BFS`, `DFS`, `UCS`, `DLS`, `IDDFS`, `BidirectionalSearch` |
+| **visualizer_folder/** | Real-time Pygame visualization | `GridVisualizer`, `Colors` |
 
 ---
 
