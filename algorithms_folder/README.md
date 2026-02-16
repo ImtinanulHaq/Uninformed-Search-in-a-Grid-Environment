@@ -30,12 +30,3 @@ print(f"Path length: {len(result['path'])}")
 print(f"Nodes explored: {len(result['explored'])}")
 ```
 
-## Understanding the Code
-
-Each algorithm file is kept simple and easy to understand:
-- No complex comments
-- Clear variable names
-- Direct logic flow
-- Standard search patterns
-
-Read the code to understand how each algorithm works!
