@@ -1,11 +1,3 @@
-"""
-Visualization Module
-
-This module provides a professional GUI visualization using Pygame.
-It displays the grid, walls, obstacles, explored nodes, frontier nodes, and final paths.
-Updates in real-time to show the algorithm's progress step-by-step.
-"""
-
 import pygame
 from typing import List, Set, Tuple, Optional
 from grid import Grid
@@ -14,8 +6,7 @@ import time
 
 
 class Colors:
-    """Color constants for visualization."""
-    
+
     # Basic colors
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
@@ -38,28 +29,11 @@ class Colors:
 
 
 class GridVisualizer:
-    """
-    Professional GUI for visualizing search algorithms.
-    
-    Features:
-    - Real-time animation of algorithm execution
-    - Color-coded visualization of different node states
-    - Information panel showing algorithm details and statistics
-    - Progress bar for animation tracking
-    - Legend explaining color meanings
-    """
+
     
     def __init__(self, grid: Grid, window_width: int = 1200, 
                  animation_delay: float = 0.02, show_dynamic_obstacles: bool = True):
-        """
-        Initialize the visualizer.
-        
-        Args:
-            grid: Grid object to visualize
-            window_width: Total width of the window in pixels
-            animation_delay: Delay between animation frames in seconds (lower = faster)
-            show_dynamic_obstacles: Whether to highlight dynamic obstacles
-        """
+  
         self.grid = grid
         self.animation_delay = animation_delay
         self.show_dynamic_obstacles = show_dynamic_obstacles
@@ -105,14 +79,7 @@ class GridVisualizer:
     
     def draw_cell(self, pos: Tuple[int, int], color: Tuple[int, int, int], 
                   border: bool = False) -> None:
-        """
-        Draw a colored cell at the given position.
-        
-        Args:
-            pos: Cell position (x, y) in grid coordinates
-            color: RGB color tuple (r, g, b)
-            border: Whether to draw a black border around the cell
-        """
+ 
         x, y = pos
         
         # Calculate pixel coordinates with small padding
@@ -132,22 +99,7 @@ class GridVisualizer:
     
     def draw_ui_panel(self, algorithm_name: str, result: Optional[SearchResult] = None,
                      current_step: int = 0, total_steps: int = 0) -> None:
-        """
-        Draw the information panel on the right side of the screen.
-        
-        Shows:
-        - Application title
-        - Algorithm name
-        - Grid dimensions
-        - Search results (if available)
-        - Animation progress
-        
-        Args:
-            algorithm_name: Name of the search algorithm
-            result: Search result object (None during initial setup)
-            current_step: Current step in animation
-            total_steps: Total steps in animation
-        """
+
         # Draw panel background
         panel_rect = pygame.Rect(self.grid_width, 0, 350, self.window_height)
         pygame.draw.rect(self.screen, Colors.UI_BACKGROUND, panel_rect)
@@ -186,10 +138,10 @@ class GridVisualizer:
         if result:
             # Show success or failure
             if result.found:
-                status_text = "✓ Target Found!"
+                status_text = " Target Found!"
                 status_color = (0, 150, 0)  # Green for success
             else:
-                status_text = "✗ Target Not Found"
+                status_text = " Target Not Found"
                 status_color = (200, 0, 0)  # Red for failure
             
             status_surface = self.font_large.render(status_text, True, status_color)
@@ -280,18 +232,7 @@ class GridVisualizer:
     
     def visualize_algorithm(self, algorithm_name: str, result: SearchResult,
                           explored_animation: Optional[List[Tuple[int, int]]] = None) -> None:
-        """
-        Animate the algorithm execution step-by-step.
-        
-        Shows two phases:
-        1. Exploration phase: Nodes being explored one by one
-        2. Path phase: Final path being drawn
-        
-        Args:
-            algorithm_name: Name of the algorithm for display
-            result: Complete search results
-            explored_animation: Optional ordered list of explored nodes for smooth animation
-        """
+   
         step = 0
         total_steps = len(result.explored) + len(result.path)
         
