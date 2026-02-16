@@ -1,4 +1,5 @@
 from collections import deque
+from . import SearchResult
 
 class BidirectionalSearch:
     def __init__(self, grid):
@@ -26,12 +27,8 @@ class BidirectionalSearch:
                 
                 if node_f in self.explored_backward:
                     path = self.reconstruct_path(node_f)
-                    return {
-                        'found': True,
-                        'path': path,
-                        'explored': self.explored_forward | self.explored_backward,
-                        'frontier_history': self.frontier_history
-                    }
+                    explored = self.explored_forward | self.explored_backward
+                    return SearchResult(True, path, explored, self.frontier_history)
                 
                 self.explored_forward.add(node_f)
                 
@@ -48,12 +45,8 @@ class BidirectionalSearch:
                 
                 if node_b in self.explored_forward:
                     path = self.reconstruct_path(node_b)
-                    return {
-                        'found': True,
-                        'path': path,
-                        'explored': self.explored_forward | self.explored_backward,
-                        'frontier_history': self.frontier_history
-                    }
+                    explored = self.explored_forward | self.explored_backward
+                    return SearchResult(True, path, explored, self.frontier_history)
                 
                 self.explored_backward.add(node_b)
                 
@@ -64,12 +57,8 @@ class BidirectionalSearch:
                         frontier_b.append(neighbor)
                         in_frontier_b.add(neighbor)
         
-        return {
-            'found': False,
-            'path': [],
-            'explored': self.explored_forward | self.explored_backward,
-            'frontier_history': self.frontier_history
-        }
+        explored = self.explored_forward | self.explored_backward
+        return SearchResult(False, [], explored, self.frontier_history)
     
     def reconstruct_path(self, meeting_point):
         path_f = []

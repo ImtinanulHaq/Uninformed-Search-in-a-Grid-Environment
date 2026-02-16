@@ -1,8 +1,10 @@
 from grid import Grid
-from algorithms import (
-    BreadthFirstSearch, DepthFirstSearch, UniformCostSearch,
-    DepthLimitedSearch, IterativeDeepeningDFS, BidirectionalSearch
-)
+from algorithms_folder.bfs import BFS
+from algorithms_folder.dfs import DFS
+from algorithms_folder.ucs import UCS
+from algorithms_folder.dls import DLS
+from algorithms_folder.iddfs import IDDFS
+from algorithms_folder.bidirectional import BidirectionalSearch
 from visualizer import GridVisualizer
 import random
 
@@ -35,11 +37,11 @@ class GridPathfinder:
         
         # Dictionary of available algorithms
         self.algorithms = {
-            "BFS": BreadthFirstSearch,
-            "DFS": DepthFirstSearch,
-            "UCS": UniformCostSearch,
-            "DLS": lambda g: DepthLimitedSearch(g, depth_limit=150),  # Increased to 150 to handle 50x50 grids
-            "IDDFS": IterativeDeepeningDFS,
+            "BFS": BFS,
+            "DFS": DFS,
+            "UCS": UCS,
+            "DLS": DLS,
+            "IDDFS": IDDFS,
             "BIDIRECTIONAL": BidirectionalSearch,
         }
     

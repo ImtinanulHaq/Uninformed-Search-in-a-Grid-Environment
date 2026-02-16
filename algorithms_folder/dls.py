@@ -1,3 +1,5 @@
+from . import SearchResult
+
 class DLS:
     def __init__(self, grid, depth_limit=150):
         self.grid = grid
@@ -25,12 +27,7 @@ class DLS:
             
             if node == self.grid.target:
                 path = self.reconstruct_path(node)
-                return {
-                    'found': True,
-                    'path': path,
-                    'explored': self.explored,
-                    'frontier_history': self.frontier_history
-                }
+                return SearchResult(True, path, self.explored, self.frontier_history)
             
             if depth < self.depth_limit:
                 neighbors = self.grid.get_neighbors(node)
@@ -40,12 +37,7 @@ class DLS:
                         frontier.append((neighbor, depth + 1))
                         in_frontier.add(neighbor)
         
-        return {
-            'found': False,
-            'path': [],
-            'explored': self.explored,
-            'frontier_history': self.frontier_history
-        }
+        return SearchResult(False, [], self.explored, self.frontier_history)
     
     def reconstruct_path(self, node):
         path = []

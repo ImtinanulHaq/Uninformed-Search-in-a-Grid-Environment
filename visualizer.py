@@ -1,7 +1,7 @@
 import pygame
 from typing import List, Set, Tuple, Optional
 from grid import Grid
-from algorithms import SearchResult
+from algorithms_folder import SearchResult
 import time
 
 

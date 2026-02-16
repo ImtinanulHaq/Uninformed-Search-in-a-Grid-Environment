@@ -1,3 +1,5 @@
+from . import SearchResult
+
 class DFS:
     def __init__(self, grid):
         self.grid = grid
@@ -23,12 +25,7 @@ class DFS:
             
             if node == self.grid.target:
                 path = self.reconstruct_path(node)
-                return {
-                    'found': True,
-                    'path': path,
-                    'explored': self.explored,
-                    'frontier_history': self.frontier_history
-                }
+                return SearchResult(True, path, self.explored, self.frontier_history)
             
             neighbors = self.grid.get_neighbors(node)
             for neighbor in reversed(neighbors):
@@ -37,12 +34,7 @@ class DFS:
                     frontier.append(neighbor)
                     in_frontier.add(neighbor)
         
-        return {
-            'found': False,
-            'path': [],
-            'explored': self.explored,
-            'frontier_history': self.frontier_history
-        }
+        return SearchResult(False, [], self.explored, self.frontier_history)
     
     def reconstruct_path(self, node):
         path = []

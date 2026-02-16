@@ -1,3 +1,5 @@
+from . import SearchResult
+
 class IDDFS:
     def __init__(self, grid):
         self.grid = grid
@@ -18,19 +20,9 @@ class IDDFS:
             all_explored.update(self.explored)
             
             if result is not None:
-                return {
-                    'found': True,
-                    'path': result,
-                    'explored': all_explored,
-                    'frontier_history': self.frontier_history
-                }
+                return SearchResult(True, result, all_explored, self.frontier_history)
         
-        return {
-            'found': False,
-            'path': [],
-            'explored': all_explored,
-            'frontier_history': self.frontier_history
-        }
+        return SearchResult(False, [], all_explored, self.frontier_history)
     
     def dfs_limited(self, limit):
         self.parent[self.grid.start] = None
