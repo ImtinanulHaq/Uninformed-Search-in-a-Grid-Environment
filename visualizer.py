@@ -111,11 +111,11 @@ class GridVisualizer:
         line_height = 30
         
         # === Application Title ===
-        title_surface = self.font_title.render("GOOD PERFORMANCE", True, Colors.TEXT_COLOR)
+        title_surface = self.font_title.render("Pathfinder", True, Colors.TEXT_COLOR)
         self.screen.blit(title_surface, (x_offset, y_offset))
         y_offset += 20
         
-        title_surface2 = self.font_title.render("TIME APP", True, Colors.TEXT_COLOR)
+        title_surface2 = self.font_title.render("Engine", True, Colors.TEXT_COLOR)
         self.screen.blit(title_surface2, (x_offset, y_offset))
         y_offset += 40
         
