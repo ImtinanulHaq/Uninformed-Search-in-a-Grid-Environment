@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org)
 [![Pygame](https://img.shields.io/badge/Pygame-2.5.2-red.svg)](https://www.pygame.org)
 [![License](https://img.shields.io/badge/License-Educational-green.svg)](#license)
-[![GitHub](https://img.shields.io/badge/GitHub-ImtinanulHaq-black.svg)](https://github.com/ImtinanulHaq)
+[![Authors](https://img.shields.io/badge/Authors-ImtinanulHaq%20%7C%20alien--2u-black.svg)](#authors)
 
 </div>
 
@@ -705,13 +705,15 @@ This project is provided for **educational purposes**. You are free to use, modi
 
 ---
 
-## Author
+## Authors
 
-**Muhammad Imtinan-ul-Haq**
+**Imtinan ul Haq**  
+**GitHub:** [@ImtinanulHaq](https://github.com/ImtinanulHaq)
+
+**Ali Amir**  
+**GitHub:** [@alien-2u](https://github.com/alien-2u)
 
 Created as a professional implementation of AI Pathfinding and Uninformed Search algorithms.
-
-**GitHub:** [@ImtinanulHaq](https://github.com/ImtinanulHaq)
 
 ---
 
