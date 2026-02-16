@@ -5,7 +5,7 @@ from algorithms_folder.ucs import UCS
 from algorithms_folder.dls import DLS
 from algorithms_folder.iddfs import IDDFS
 from algorithms_folder.bidirectional import BidirectionalSearch
-from visualizer import GridVisualizer
+from visualizer_folder import GridVisualizer
 import random
 
 
