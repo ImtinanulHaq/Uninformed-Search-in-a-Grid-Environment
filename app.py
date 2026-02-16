@@ -1,13 +1,3 @@
-"""
-Main Application Module
-
-This is the entry point for the Uninformed Search Grid Pathfinder application.
-It orchestrates the grid setup, algorithm execution, and visualization.
-
-Author: Assignment Solution
-Date: 2026
-"""
-
 from grid import Grid
 from algorithms import (
     BreadthFirstSearch, DepthFirstSearch, UniformCostSearch,
@@ -18,15 +8,7 @@ import random
 
 
 class GridPathfinder:
-    """
-    Main application class for running uninformed search algorithms on a grid.
-    
-    This class manages:
-    - Grid creation and configuration
-    - Algorithm selection and execution
-    - Visualization of results
-    - Performance metrics collection
-    """
+ 
     
     def __init__(self, width: int = 50, height: int = 50, 
                  start: tuple = (5, 5), target: tuple = (45, 45),
@@ -62,13 +44,7 @@ class GridPathfinder:
         }
     
     def run_algorithm(self, algorithm_name: str, show_visualization: bool = True) -> None:
-        """
-        Run a specific algorithm and visualize the result.
-        
-        Args:
-            algorithm_name: Name of the algorithm (BFS, DFS, UCS, DLS, IDDFS, BIDIRECTIONAL)
-            show_visualization: Whether to show the GUI visualization
-        """
+   
         if algorithm_name not in self.algorithms:
             print(f"✗ Algorithm '{algorithm_name}' not found!")
             print(f"  Available algorithms: {', '.join(self.algorithms.keys())}")
@@ -106,12 +82,7 @@ class GridPathfinder:
             traceback.print_exc()
     
     def run_all_algorithms(self, show_visualization: bool = False) -> None:
-        """
-        Run all algorithms sequentially and compare results.
-        
-        Args:
-            show_visualization: Whether to show visualizations for each algorithm
-        """
+
         print(f"\n{'='*60}")
         print("Running ALL algorithms for comparison...")
         print(f"{'='*60}\n")
@@ -149,13 +120,7 @@ class GridPathfinder:
         self._print_comparison_table(results_summary)
     
     def _print_results(self, algorithm_name: str, result) -> None:
-        """
-        Print formatted results of an algorithm run.
-        
-        Args:
-            algorithm_name: Name of the algorithm
-            result: SearchResult object
-        """
+
         print(f"\n{'─'*60}")
         print("RESULTS:")
         print(f"{'─'*60}")
@@ -175,12 +140,7 @@ class GridPathfinder:
         print(f"{'─'*60}\n")
     
     def _print_comparison_table(self, results: dict) -> None:
-        """
-        Print a comparison table of all algorithm results.
-        
-        Args:
-            results: Dictionary of algorithm results
-        """
+
         print(f"\n{'='*80}")
         print("COMPARISON OF ALL ALGORITHMS")
         print(f"{'='*80}")
@@ -199,9 +159,7 @@ class GridPathfinder:
         print(f"{'='*80}\n")
     
     def interactive_menu(self) -> None:
-        """
-        Display an interactive menu for algorithm selection and execution.
-        """
+
         while True:
             print(f"\n{'='*60}")
             print("UNINFORMED SEARCH PATHFINDER - INTERACTIVE MENU")
@@ -264,15 +222,12 @@ class GridPathfinder:
 
 
 def main():
-    """
-    Main entry point for the application.
-    Creates a pathfinder instance and starts the interactive menu.
-    """
+    
     print("\n")
-    print("╔" + "═"*58 + "╗")
-    print("║" + " UNINFORMED SEARCH IN GRID ENVIRONMENT ".center(58) + "║")
-    print("║" + " AI Pathfinder with Dynamic Obstacles ".center(58) + "║")
-    print("╚" + "═"*58 + "╝")
+    print("(" + "═"*58 + ")")
+    print("(" + " UNINFORMED SEARCH IN GRID ENVIRONMENT ".center(58) + ")")
+    print("(" + " AI Pathfinder with Dynamic Obstacles ".center(58) + ")")
+    print("(" + "═"*58 + ")")
     
     # Create pathfinder with default settings
     # You can modify these parameters for different scenarios
