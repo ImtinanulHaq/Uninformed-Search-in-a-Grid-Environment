@@ -2,12 +2,12 @@
 
 <div align="center">
 
-** AI Pathfinder with Dynamic Obstacles and Real-time Visualization**
+**AI Pathfinder with Dynamic Obstacles and Real-time Visualization**
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org)
 [![Pygame](https://img.shields.io/badge/Pygame-2.5.2-red.svg)](https://www.pygame.org)
 [![License](https://img.shields.io/badge/License-Educational-green.svg)](#license)
-[![Authors](https://img.shields.io/badge/Authors-ImtinanulHaq%20%7C%20alien--2u-black.svg)](#authors)
+[![Authors](https://img.shields.io/badge/Authors-ImtinanulHaq%20%7C%20aliamir26-black.svg)](#authors)
 
 </div>
 
@@ -721,7 +721,7 @@ This project is provided for **educational purposes**. You are free to use, modi
 **GitHub:** [@ImtinanulHaq](https://github.com/ImtinanulHaq)
 
 **Ali Amir**  
-**GitHub:** [@alien-2u](https://github.com/alien-2u)
+**GitHub:** [@aliamir26](https://github.com/aliamir26)
 
 Created as a professional implementation of AI Pathfinding and Uninformed Search algorithms.
 
